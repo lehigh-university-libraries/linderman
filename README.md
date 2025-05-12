@@ -15,12 +15,16 @@ First, clone your app(s)
 git clone git@github.com:lehigh-university-libraries/folio-offline-shelf-reading
 ```
 
-Next, clone this repo, which is configured for all apps Library Technology deploys using linderman and start the services.
+Next, clone this repo, which is configured for all apps Library Technology deploys using linderman.
 
 ```
 git clone git@github.com:lehigh-university-libraries/linderman
 cd linderman
 ./scripts/maintenance/generate-certs.sh
+
+Start the services
+
+```
 docker compose up -d
 ```
 
@@ -33,13 +37,14 @@ You should be able to make edits to your apps, which should be `git clone`'d int
 ├── sentence-transformer-service
 ```
 
-If you need to make edits to the dockerfile on a specific app (e.g. installing a new pip dependency), you can build the docker image for your app to get the dependency installed with
+If you need to make edits to the dockerfile on a specific app (e.g. installing a new pip dependency), you can build the docker image for your app to get the dependency installed with. e.g.
 
 ```
+cd /path/to/linderman
 docker compose up --build shelf-reading -d
 ```
 
-## Initial bootstrapping (stage/production)
+## Initial bootstrapping on SET managed stage/production VMs)
 
 ```
 cd /opt

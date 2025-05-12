@@ -15,12 +15,13 @@ First, clone your app(s)
 git clone git@github.com:lehigh-university-libraries/folio-offline-shelf-reading
 ```
 
-Next, clone this repo, which is configured for all apps Library Technology deploys using linderman.
+Next, clone this repo, which is configured to run all apps Library Technology deploys using linderman.
 
 ```
 git clone git@github.com:lehigh-university-libraries/linderman
 cd linderman
 ./scripts/maintenance/generate-certs.sh
+```
 
 Start the services
 
@@ -28,7 +29,9 @@ Start the services
 docker compose up -d
 ```
 
-You should be able to make edits to your apps, which should be `git clone`'d into the same directory as `linderman` was cloned into
+You should now be able to view the apps at e.g. https://localhost/shelf-reading
+
+You should be able to make edits to your app's code, which should be `git clone`'d into the same directory `linderman` was cloned into
 
 ```
 .

@@ -1,0 +1,12 @@
+# overrides for docker compose running on apps-prod
+services:
+  rollout:
+    environment:
+      DOMAIN: apps-prod.lib.lehigh.edu
+  traefik:
+    environment:
+      DOMAIN: apps-prod.lib.lehigh.edu
+    networks:
+      default:
+        aliases:
+          - apps-prod.lib.lehigh.edu

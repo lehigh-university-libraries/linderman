@@ -1,0 +1,35 @@
+# overrides for docker compose running on apps-test
+volumes:
+  actions-runner-data: {}
+
+services:
+  github-actions-runner:
+    image: us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner:main
+    environment:
+      GITHUB_RUNNER_TOKEN: ${GITHUB_RUNNER_TOKEN}
+      GITHUB_REPO: "https://github.com/lehigh-university-libraries/linderman"
+      LABELS: linderman
+    volumes:
+      - actions-runner-data:/app:rw
+      - /var/run/docker.sock:/var/run/docker.sock:z
+  gha-runner-updater:
+    image: us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner:main
+    working_dir: /app
+    entrypoint: /bin/sh
+    command: -c "while true; do /app/scripts/maintenance/update-gha.sh; sleep 600; done"
+    environment:
+      HOSTNAME: ${HOSTNAME}
+    volumes:
+      - ./:/app
+      - /root/.docker:/root/.docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:z
+  rollout:
+    environment:
+      DOMAIN: apps-test.lib.lehigh.edu
+  traefik:
+    environment:
+      DOMAIN: apps-test.lib.lehigh.edu
+    networks:
+      default:
+        aliases:
+          - apps-test.lib.lehigh.edu

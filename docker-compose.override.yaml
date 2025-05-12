@@ -1,0 +1,18 @@
+services:
+  shelf-reading:
+    build:
+      context: ../folio-offline-shelf-reading
+    volumes:
+      - ../folio-offline-shelf-reading:/app
+  sentence-transformer:
+    build:
+      context: ../sentence-transformer-service
+    volumes:
+      - ../sentence-transformer-service:/app
+  rollout:
+    profiles: [donotstart]
+  traefik:
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"

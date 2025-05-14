@@ -19,8 +19,6 @@ http:
       entryPoints:
         - https
       tls: {}
-      middlewares:
-        - strip-route-path
       service: shelf-reading
     sentence-transformer:
       rule: PathPrefix(`/sentence-transformer`)

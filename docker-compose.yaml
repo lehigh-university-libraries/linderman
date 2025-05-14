@@ -4,7 +4,9 @@ networks:
 
 services:
   shelf-reading:
-    image: ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:docker
+    image: ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:main
+    environment:
+        SCRIPT_NAME: /shelf-reading
     volumes:
       - ./secrets/shelf-reading/config.properties:/app/config/config.properties:ro
     healthcheck:

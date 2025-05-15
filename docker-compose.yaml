@@ -4,13 +4,9 @@ networks:
 
 services:
   shelf-reading:
-    image: ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:main
+    image: ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:${SHELF_READING_TAG:-main}
     environment:
         SCRIPT_NAME: /shelf-reading
-    healthcheck:
-      start_period: 1s
-  sentence-transformer:
-    image: ghcr.io/lehigh-university-libraries/sentence-transformer:main
     healthcheck:
       start_period: 1s
   rollout:
@@ -28,6 +24,7 @@ services:
       ROLLOUT_LOCK_FILE: /opt/linderman/rollout.lock
       HOSTNAME: ${HOSTNAME}
       DOMAIN: localhost
+      SLACK_WEBHOOK: ${SLACK_WEBHOOK}
     healthcheck:
       start_period: 1s
   traefik:

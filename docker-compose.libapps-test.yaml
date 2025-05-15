@@ -10,7 +10,7 @@ services:
     image: us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner:main
     environment:
       GITHUB_RUNNER_TOKEN: ${GITHUB_RUNNER_TOKEN}
-      GITHUB_REPO: "https://github.com/lehigh-university-libraries/linderman"
+      GITHUB_REPO: "https://github.com/lehigh-university-libraries"
       LABELS: linderman
     volumes:
       - actions-runner-data:/app:rw

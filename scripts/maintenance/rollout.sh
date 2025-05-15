@@ -11,7 +11,7 @@ export DRUPAL_DOCKER_TAG
 send_slack_message() {
     escaped_message=$(echo "$@" | jq -Rsa .)
     curl -s -o /dev/null -XPOST "$SLACK_WEBHOOK" -d '{
-      "msg": '"$escaped_message"'
+      "text": '"$escaped_message"'
     }'
 }
 
@@ -32,11 +32,19 @@ docker_compose() {
 cd /opt/linderman
 git fetch origin
 
-send_slack_message "Rolling out changes to https://$DOMAIN :rocket: :shipit: :rocket:"
+send_slack_message "Rolling out ${GIT_REPO}:${DOCKER_TAG} to https://$DOMAIN :rocket: :shipit: :rocket:"
 
-git reset --hard
-git checkout "$GIT_BRANCH"
-git pull origin "$GIT_BRANCH"
+if [ "$GIT_REPO" = "lehigh-university-libraries/folio-offline-shelf-reading" ]; then
+  SHELF_READING_TAG=${DOCKER_TAG}
+  export SHELF_READING_TAG
+elif [ "$GIT_REPO" = "lehigh-university-libraries/linderman" ]; then
+  git reset --hard
+  git checkout "$GIT_BRANCH"
+  git pull origin "$GIT_BRANCH"
+else
+  echo "Unknown repo: $GIT_REPO"
+  exit 1
+fi
 
 docker_compose pull --quiet
 

@@ -47,6 +47,18 @@ cd /path/to/linderman
 docker compose up --build shelf-reading -d
 ```
 
+## Manual deployment
+
+```
+ssh apps-test.lib.lehigh.edu
+cd /opt/linderman
+sudo git pull origin main
+sudo docker compose pull
+sudo systemctl restart linderman
+```
+
+Same steps for production, except start with `ssh apps-prod.lib.lehigh.edu`
+
 ## Initial bootstrapping on SET managed stage/production VMs)
 
 ```

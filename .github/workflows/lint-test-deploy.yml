@@ -37,6 +37,7 @@ jobs:
             fi
 
             sleep 5
+          done
 
   deploy-test:
     needs: [lint-test]

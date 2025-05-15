@@ -19,6 +19,8 @@ http:
       entryPoints:
         - https
       tls: {}
+      middlewares:
+        - ldap-valid-user
       service: shelf-reading
     sentence-transformer:
       rule: PathPrefix(`/sentence-transformer`)
@@ -42,6 +44,17 @@ http:
         servers:
           - url: http://sentence-transformer:8080
   middlewares:
+    ldap-valid-user:
+      plugin:
+        ldapAuth:
+          enabled: true
+          logLevel: DEBUG
+          attribute: "uid"
+          baseDN: "dc=lehigh,dc=edu"
+          serverList:
+            - Url: "ldaps://nis.cc.lehigh.edu"
+              Port: 636
+              Weight: 10
     https-redirect:
       redirectScheme:
         scheme: https

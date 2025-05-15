@@ -3,6 +3,9 @@ volumes:
   actions-runner-data: {}
 
 services:
+  shelf-reading:
+    volumes:
+      - ./secrets/shelf-reading/config.properties:/app/config/config.properties:ro
   github-actions-runner:
     image: us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner:main
     environment:

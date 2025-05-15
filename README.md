@@ -52,6 +52,7 @@ docker compose up --build shelf-reading -d
 ```
 ssh apps-test.lib.lehigh.edu
 cd /opt/linderman
+sudo git checkout main
 sudo git pull origin main
 sudo docker compose pull
 sudo systemctl restart linderman

@@ -1,0 +1,60 @@
+name: lint-test-deploy
+on:
+  push:
+    branches:
+      - "**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - run: shellcheck **/*.sh
+
+      - name: start traefik
+        run: docker compose up -d traefik
+
+      - name: check traefik is healthy
+        run: |
+          COUNT=0
+          while true; do
+            docker container inspect linderman-traefik-1 | \
+              jq -er '.[0].State.Health.Status' | grep -q healthy && break || echo "Traefik not healthy"
+
+            COUNT=$(( COUNT + 1 ))
+            if [ "$COUNT" -gt 10 ]; then
+              echo "Traefik failed to come up healthy"
+              exit 1
+            fi
+
+            sleep 5
+
+  deploy-test:
+    needs: [lint-test]
+    uses: lehigh-university-libraries/gha/.github/workflows/linderman-deploy.yaml@main
+    with:
+      url: https://apps-test.lib.lehigh.edu/_rollout
+    secrets: inherit
+    permissions:
+      contents: read
+      id-token: write
+
+  deploy-prod:
+    needs: [deploy-test]
+    if: github.ref == 'refs/heads/main'
+    uses: lehigh-university-libraries/gha/.github/workflows/linderman-deploy.yaml@main
+    with:
+      url: https://apps-prod.lib.lehigh.edu/_rollout
+    secrets: inherit
+    permissions:
+      contents: read
+      id-token: write

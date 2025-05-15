@@ -47,12 +47,14 @@ services:
       --providers.docker=true
       --providers.docker.network=default
       --providers.docker.exposedByDefault=false
+      --experimental.localPlugins.ldapAuth.moduleName=github.com/lehigh-university-libraries/ldapAuth
     environment:
       DOMAIN: localhost
     ports:
       - "80:80"
       - "443:443"
     volumes:
+      - ./conf/traefik/plugins/ldapAuth:/plugins-local/src/github.com/lehigh-university-libraries/ldapAuth:r
       - ./certs:/etc/ssl/traefik:Z,ro
       - ./conf/traefik/config.tmpl:/etc/traefik/config.yaml:ro
       - /var/run/docker.sock:/var/run/docker.sock:z

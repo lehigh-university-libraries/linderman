@@ -60,6 +60,17 @@ sudo systemctl restart linderman
 
 Same steps for production, except start with `ssh apps-prod.lib.lehigh.edu`
 
+## Authentication
+
+Any service running in linderman can leverage LDAP authentication by adding the traefik middleware `ldap-valid-user` to its router. This will force LDAP authentication before access the application, and will forward the username via the HTTP header `X-Remote-User`.
+
+The LDAP traefik middleware is maintined at https://github.com/lehigh-university-libraries/ldapAuth and updates can be pulled into linderman via
+
+```
+cd path/to/linderman
+git subtree pull --prefix conf/traefik/plugins/ldapAuth https://github.com/lehigh-university-libraries/ldapAuth main --squash
+```
+
 ## Initial bootstrapping on SET managed stage/production VMs)
 
 ```

@@ -51,13 +51,13 @@ docker compose up --build shelf-reading -d
 
 This repo, as well as each app linderman hosts, references a reusable GitHub Action [linderman-deploy.yaml](https://github.com/lehigh-university-libraries/gha/blob/main/.github/workflows/linderman-deploy.yaml) to deploy changes made in GitHub into Lehigh's infrastructure. 
 
-That shared action leverages lindermans's self-hosted GitHub Action Runner, defined in [docker-compose.libapps-test.yaml](./docker-compose.libapps-test.yaml) to trigger a rollout when pushes are made to a branch. That runner was added to [the lehigh-university-libraries GitHub org](https://github.com/organizations/lehigh-university-libraries/settings/actions/runners) so any repo in our org can leverage the self hosted runner. The logic performed during the rollout can be seen in [rollout.sh](./scripts/maintenance/rollout.sh). It's basically:
+That shared action leverages linderman's self-hosted GitHub Action Runner, defined in [docker-compose.libapps-test.yaml](./docker-compose.libapps-test.yaml) to trigger a rollout when pushes are made to a branch. That runner was added to [the lehigh-university-libraries GitHub org](https://github.com/organizations/lehigh-university-libraries/settings/actions/runners) so any repo in our org can leverage the self hosted runner. We need a self-hosted runner since the linderman services are protected via a firewall to on-campus only. The logic performed during the rollout can be seen in [rollout.sh](./scripts/maintenance/rollout.sh). It's basically:
 
 - slack alert message when rollout starts
-- if an app, run `docker pull` for the app's docker tag being deployed
-- elseif for this repo/linderman, run `git pull`
+- if an app is being deployed, run `docker pull` for the app's docker tag
+- else if this repo/linderman is what's being deployed, run `git pull` on the filesystem
 - run `docker compose up -d` to get the changes running
-- slack alert message when rollout ends (pass or fail)
+- slack alert message when rollout ends (pass or fail status)
 
 Each app can define in their GitHub Action when to deploy to test or prod. This repo deploys to test whenever a branch is pushed to this repo, and when the branch is merged into main that is deployed to test and then prod.
 

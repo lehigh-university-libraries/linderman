@@ -1,4 +1,7 @@
 # overrides for docker compose running on apps-test
+networks:
+  gha:
+
 volumes:
   actions-runner-data: {}
 
@@ -12,9 +15,10 @@ services:
       GITHUB_RUNNER_TOKEN: ${GITHUB_RUNNER_TOKEN}
       GITHUB_REPO: "https://github.com/lehigh-university-libraries"
       LABELS: linderman
+    networks:
+      - gha
     volumes:
       - actions-runner-data:/app:rw
-      - /var/run/docker.sock:/var/run/docker.sock:z
   gha-runner-updater:
     image: us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner:main
     working_dir: /app

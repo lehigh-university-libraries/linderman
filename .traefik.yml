@@ -1,0 +1,19 @@
+displayName: ldapAuth
+type: middleware
+
+import: github.com/lehigh-university-libraries/ldapAuth
+
+summary: "An open source Traefik Middleware that enables Authentication via LDAP in a similar way to Traefik Enterprise. \"You shall authenticate to the LDAP to pass\" - Gandalpher, the gopher"
+
+iconPath: imgs/gandalpher.png
+
+bannerPath: imgs/gandalpher.png
+
+testData:
+  Enabled: true
+  LogLevel: "DEBUG"
+  Attribute: "uid"
+  BaseDn: "dc=example,dc=org"
+  ServerList:
+    - Url: "ldap://example.com"
+      Port: 389

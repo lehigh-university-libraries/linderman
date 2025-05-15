@@ -47,7 +47,23 @@ cd /path/to/linderman
 docker compose up --build shelf-reading -d
 ```
 
+## Continuous Deployment
+
+This repo, as well as each app linderman hosts, references a reusable GitHub Action [linderman-deploy.yaml](https://github.com/lehigh-university-libraries/gha/blob/main/.github/workflows/linderman-deploy.yaml) to deploy changes made in GitHub into Lehigh's infrastructure. 
+
+That shared action leverages linderman's self-hosted GitHub Action Runner, defined in [docker-compose.libapps-test.yaml](./docker-compose.libapps-test.yaml) to trigger a rollout when pushes are made to a branch. That runner was added to [the lehigh-university-libraries GitHub org](https://github.com/organizations/lehigh-university-libraries/settings/actions/runners) so any repo in our org can leverage the self hosted runner. We need a self-hosted runner since the linderman services are protected via a firewall to on-campus only. The logic performed during the rollout can be seen in [rollout.sh](./scripts/maintenance/rollout.sh). It's basically:
+
+- slack alert message when rollout starts
+- if an app is being deployed, run `docker pull` for the app's docker tag
+- else if this repo/linderman is what's being deployed, run `git pull` on the filesystem
+- run `docker compose up -d` to get the changes running
+- slack alert message when rollout ends (pass or fail status)
+
+Each app can define in their GitHub Action when to deploy to test or prod. This repo deploys to test whenever a branch is pushed to this repo, and when the branch is merged into main that is deployed to test and then prod.
+
 ## Manual deployment
+
+If ever needed, you can manually deploy linderman like so
 
 ```
 ssh apps-test.lib.lehigh.edu
@@ -60,7 +76,7 @@ sudo systemctl restart linderman
 
 Same steps for production, except start with `ssh apps-prod.lib.lehigh.edu`
 
-## Authentication
+## Service/App Authentication
 
 Any service running in linderman can leverage LDAP authentication by adding the traefik middleware `ldap-valid-user` to its traefik router in [config/traefik/config.tmpl](./config/traefik/config.tmpl). This will force LDAP authentication before the application can be loaded in the web browser, and once authenticated will forward the username via the HTTP header `X-Remote-User` to the backend service.
 

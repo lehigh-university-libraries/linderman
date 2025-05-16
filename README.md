@@ -5,7 +5,7 @@ Docker compose deployment of various small, internal apps for Lehigh's Library T
 - Docker compose is the container orchestrator
 - Traefik handles TLS, routing to apps, [LDAP authentication](#serviceapp-authentication)
 - Each app is a service in the docker compose YAML, and served as a route/path under our main domain
-- GitHub Actions + self hosted runner + rollout service handle code deploys. More info in (continuous deployment section](#continuous-deployment)
+- GitHub Actions + self hosted runner + rollout service handle code deploys. More info in [continuous deployment section](#continuous-deployment)
 - This stack is deployed into SET managed VMs in Lehigh's data center
 
 

@@ -9,7 +9,15 @@ echo "Deploying git branch $GIT_BRANCH, docker tag $DOCKER_TAG"
 send_slack_message() {
     escaped_message=$(echo "$@" | jq -Rsa .)
     curl -s -o /dev/null -XPOST "$SLACK_WEBHOOK" -d '{
-      "text": '"$escaped_message"'
+      "blocks": [
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": '"$escaped_message"'
+          }
+        }
+      ]
     }'
 }
 
@@ -30,7 +38,7 @@ docker_compose() {
 cd /opt/linderman || exit 1
 
 # TODO link right to PRs
-send_slack_message "Rolling out [${GIT_REPO#*/}:${DOCKER_TAG}](https://github.com/${GIT_REPO}/tree/${GIT_BRANCH}) to ${DOMAIN%%.*} :rocket: :shipit: :rocket:"
+send_slack_message "Rolling out <https://github.com/${GIT_REPO}/tree/${GIT_BRANCH}|${GIT_REPO#*/}:${DOCKER_TAG}> to \`${DOMAIN%%.*}\` :rocket: :shipit: :rocket:"
 
 if [ "$GIT_REPO" = "lehigh-university-libraries/folio-offline-shelf-reading" ]; then
   SHELF_READING_TAG=${DOCKER_TAG}

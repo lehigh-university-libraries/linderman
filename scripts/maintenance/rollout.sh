@@ -28,6 +28,20 @@ handle_error() {
 }
 trap 'handle_error' ERR
 
+# update .env variables
+# we don't want different service deployments to cause collisions
+# or restarting docker daemon or the VM to reset a service to its main tag
+# so maintain which docker tag was last deployed using .env
+update_env() {
+    VAR_NAME="$1"
+    VALUE="$2"
+    if grep -Eq "^${VAR_NAME}=" .env; then
+        sed -i "s/^$VAR_NAME=.*/$VAR_NAME=$VALUE/" .env
+    else
+        echo "${VAR_NAME}=${VALUE}" | tee -a .env
+    fi
+}
+
 docker_compose() {
     docker compose \
       -f docker-compose.yaml \
@@ -40,9 +54,11 @@ cd /opt/linderman || exit 1
 # TODO link right to PRs
 send_slack_message "Rolling out <https://github.com/${GIT_REPO}/tree/${GIT_BRANCH}|${GIT_REPO#*/}:${DOCKER_TAG}> to \`${DOMAIN%%.*}\` :rocket: :shipit: :rocket:"
 
+# specify which docker services to pull/restart based on the app/repo being deployed
+DOCKER_SERVICES=("traefik" "rollout")
 if [ "$GIT_REPO" = "lehigh-university-libraries/folio-offline-shelf-reading" ]; then
-  SHELF_READING_TAG=${DOCKER_TAG}
-  export SHELF_READING_TAG
+  update_env "SHELF_READING_TAG" "${DOCKER_TAG}"
+  DOCKER_SERVICES=("shelf-reading")
 elif [ "$GIT_REPO" = "lehigh-university-libraries/linderman" ]; then
   git fetch origin
   git reset --hard
@@ -53,11 +69,7 @@ else
   exit 1
 fi
 
-# TODO - there is an edge case here where if our ten minute timer
-# that is checking for a GHA runner image update and a deployment happen
-# at the same time this job will timeout
-# Though the deployment should work OK, but we should fix this if we trip over it
-docker_compose pull --quiet
+docker_compose pull --quiet "${DOCKER_SERVICES[@]}"
 
 # TODO if relevant, put app into read-only mode, we're about to restart any containers we pulled
 
@@ -66,6 +78,7 @@ docker_compose up \
   --wait \
   --pull missing \
   --quiet-pull \
+  "${DOCKER_SERVICES[@]}" \
   -d
 
 # TODO any app specific maintenance tasks
@@ -76,6 +89,7 @@ docker_compose up \
   --wait \
   --pull missing \
   --quiet-pull \
+  "${DOCKER_SERVICES[@]}" \
   -d
 
 send_slack_message "Roll out complete 🎉"

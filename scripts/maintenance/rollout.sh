@@ -3,10 +3,8 @@
 set -eou pipefail
 
 GIT_BRANCH=${GIT_BRANCH:-main}
-DRUPAL_DOCKER_TAG=${DOCKER_TAG:-main}
 
-echo "Deploying git branch $GIT_BRANCH, docker tag $DRUPAL_DOCKER_TAG"
-export DRUPAL_DOCKER_TAG
+echo "Deploying git branch $GIT_BRANCH, docker tag $DOCKER_TAG"
 
 send_slack_message() {
     escaped_message=$(echo "$@" | jq -Rsa .)
@@ -15,11 +13,11 @@ send_slack_message() {
     }'
 }
 
+# send a failure message if this script errors for any reason
 handle_error() {
     send_slack_message "🚨 Roll out failed 🚨"
     exit 1
 }
-
 trap 'handle_error' ERR
 
 docker_compose() {
@@ -29,15 +27,16 @@ docker_compose() {
       "$@"
 }
 
-cd /opt/linderman
-git fetch origin
+cd /opt/linderman || exit 1
 
-send_slack_message "Rolling out ${GIT_REPO}:${DOCKER_TAG} to https://$DOMAIN :rocket: :shipit: :rocket:"
+# TODO link right to PRs
+send_slack_message "Rolling out [${GIT_REPO#*/}:${DOCKER_TAG}](https://github.com/${GIT_REPO}/tree/${GIT_BRANCH}) to ${DOMAIN%%.*} :rocket: :shipit: :rocket:"
 
 if [ "$GIT_REPO" = "lehigh-university-libraries/folio-offline-shelf-reading" ]; then
   SHELF_READING_TAG=${DOCKER_TAG}
   export SHELF_READING_TAG
 elif [ "$GIT_REPO" = "lehigh-university-libraries/linderman" ]; then
+  git fetch origin
   git reset --hard
   git checkout "$GIT_BRANCH"
   git pull origin "$GIT_BRANCH"
@@ -46,9 +45,13 @@ else
   exit 1
 fi
 
+# TODO - there is an edge case here where if our ten minute timer
+# that is checking for a GHA runner image update and a deployment happen
+# at the same time this job will timeout
+# Though the deployment should work OK, but we should fix this if we trip over it
 docker_compose pull --quiet
 
-# TODO if relevant, put app into read-only mode
+# TODO if relevant, put app into read-only mode, we're about to restart any containers we pulled
 
 docker_compose up \
   --remove-orphans \

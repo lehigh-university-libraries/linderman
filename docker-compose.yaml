@@ -6,17 +6,22 @@ services:
   shelf-reading:
     image: ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:${SHELF_READING_TAG:-main}
     environment:
+        # tell gunicorn/flask we're putting this behind a path
         SCRIPT_NAME: /shelf-reading
     healthcheck:
       start_period: 1s
   rollout:
     image: us-docker.pkg.dev/lehigh-lts-images/internal/rollout:main
-    restart: unless-stopped
+    restart: always
     volumes:
+      # need access to this code so we can run git pull
+      # and/or docker compose commands
       - ./:/opt/linderman
+      # need to auth to the docker CLI
       - /root/.docker:/root/.docker:ro
+      # need git SSH auth
       - /root/.ssh:/root/.ssh
-      - ./scripts/maintenance/rollout.sh:/rollout.sh:ro
+      # need access to docker daemon
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       JWKS_URI: "https://token.actions.githubusercontent.com/.well-known/jwks"
@@ -25,6 +30,8 @@ services:
       HOSTNAME: ${HOSTNAME}
       DOMAIN: localhost
       SLACK_WEBHOOK: ${SLACK_WEBHOOK}
+      # the script to run when we want to deploy new code
+      ROLLOUT_ARGS: /opt/linderman/scripts/maintenance/rollout.sh
     healthcheck:
       start_period: 1s
   traefik:
@@ -51,6 +58,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      # mount our ldap auth middleware
       - ./conf/traefik/plugins/ldapAuth:/plugins-local/src/github.com/lehigh-university-libraries/ldapAuth:r
       - ./certs:/etc/ssl/traefik:Z,ro
       - ./conf/traefik/config.tmpl:/etc/traefik/config.yaml:ro

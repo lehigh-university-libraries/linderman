@@ -1,13 +1,21 @@
 # linderman
 
+Docker compose deployment of various small, internal apps for Lehigh's Library Technology team.
+
+- Docker compose is the container orchestrator
+- Traefik handles TLS, routing to apps, [LDAP authentication](#serviceapp-authentication)
+- Each app is a service in the docker compose YAML, and served as a route/path under our main domain
+- GitHub Actions + self hosted runner + rollout service handle code deploys. More info in [continuous deployment section](#continuous-deployment)
+- This stack is deployed into SET managed VMs in Lehigh's data center
+
+
 ## Requirements
 
 - [Docker 24.0+](https://docs.docker.com/get-docker/)
-- [Docker Compose 2.x](https://docs.docker.com/compose/install/linux/) **Already included in OSX with Docker**
-- [mkcert 1.4+](https://github.com/FiloSottile/mkcert) **Local Development only**
-- `cURL` and `git`
+- [Docker Compose 2.x](https://docs.docker.com/compose/install/linux/)
+- `git`
 
-## Initial setup
+## Local development setup
 
 First, clone your app(s)
 
@@ -15,7 +23,10 @@ First, clone your app(s)
 git clone git@github.com:lehigh-university-libraries/folio-offline-shelf-reading
 ```
 
-Next, clone this repo, which is configured to run all apps Library Technology deploys using linderman.
+Next, clone this repo, which is configured to run all apps Library Technology deploys using linderman. Then run the script that generates a self-signed cert.
+
+> [!WARNING]
+> Ensure you have [mkcert 1.4+](https://github.com/FiloSottile/mkcert#installation) installed
 
 ```
 git clone git@github.com:lehigh-university-libraries/linderman
@@ -51,7 +62,9 @@ docker compose up --build shelf-reading -d
 
 This repo, as well as each app linderman hosts, references a reusable GitHub Action [linderman-deploy.yaml](https://github.com/lehigh-university-libraries/gha/blob/main/.github/workflows/linderman-deploy.yaml) to deploy changes made in GitHub into Lehigh's infrastructure. 
 
-That shared action leverages linderman's self-hosted GitHub Action Runner, defined in [docker-compose.libapps-test.yaml](./docker-compose.libapps-test.yaml) to trigger a rollout when pushes are made to a branch. That runner was added to [the lehigh-university-libraries GitHub org](https://github.com/organizations/lehigh-university-libraries/settings/actions/runners) so any repo in our org can leverage the self hosted runner. We need a self-hosted runner since the linderman services are protected via a firewall to on-campus only. The logic performed during the rollout can be seen in [rollout.sh](./scripts/maintenance/rollout.sh). It's basically:
+That shared action leverages linderman's self-hosted GitHub Action Runner, defined in [docker-compose.libapps-test.yaml](./docker-compose.libapps-test.yaml) to trigger a rollout when pushes are made to a branch. That GitHub Action runner was added to [the lehigh-university-libraries GitHub org](https://github.com/organizations/lehigh-university-libraries/settings/actions/runners) so any repo in our org can leverage the self hosted runner.
+
+We need a self-hosted runner since the linderman services are protected via a firewall to on-campus only. The rollout workflow is basically:
 
 - slack alert message when rollout starts
 - if an app is being deployed, run `docker pull` for the app's docker tag
@@ -60,6 +73,11 @@ That shared action leverages linderman's self-hosted GitHub Action Runner, defin
 - slack alert message when rollout ends (pass or fail status)
 
 Each app can define in their GitHub Action when to deploy to test or prod. This repo deploys to test whenever a branch is pushed to this repo, and when the branch is merged into main that is deployed to test and then prod.
+
+### Rollout Service
+
+The logic performed during the rollout can be seen in [rollout.sh](./scripts/maintenance/rollout.sh). That script is executed by the GitHub Action using OIDC/JWT auth on [the rollout docker service](https://github.com/lehigh-university-libraries/rollout). So triggering a rollout is basically just a `cURL` call from a GitHub Action.
+
 
 ## Manual deployment
 

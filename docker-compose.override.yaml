@@ -1,3 +1,5 @@
+# overrides for local deployment
+
 services:
   shelf-reading:
     build:

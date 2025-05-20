@@ -10,6 +10,10 @@ services:
         SCRIPT_NAME: /shelf-reading
     healthcheck:
       start_period: 1s
+  folio-shelving-order:
+    image: ghcr.io/lehigh-university-libraries/folio-shelving-order:${SHELVING_ORDER_TAG:-main}
+    healthcheck:
+      start_period: 1s
   rollout:
     image: us-docker.pkg.dev/lehigh-lts-images/internal/rollout:main
     restart: always

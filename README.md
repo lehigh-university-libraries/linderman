@@ -47,15 +47,15 @@ You should be able to make edits to your app's code, which should be `git clone`
 ```
 .
 ├── folio-offline-shelf-reading
+├── folio-shelving-order
 ├── linderman
-├── sentence-transformer-service
 ```
 
 If you need to make edits to the dockerfile on a specific app (e.g. installing a new pip dependency), you can build the docker image for your app to get the dependency installed with. e.g.
 
 ```
 cd /path/to/linderman
-docker compose up --build shelf-reading -d
+docker compose up --build folio-shelving-order -d
 ```
 
 ## Continuous Deployment

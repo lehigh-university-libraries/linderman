@@ -22,14 +22,12 @@ http:
       middlewares:
         - ldap-valid-user
       service: shelf-reading
-    sentence-transformer:
-      rule: PathPrefix(`/sentence-transformer`)
+    folio-shelving-order:
+      rule: PathPrefix(`/folio-shelving-order`)
       entryPoints:
         - https
       tls: {}
-      middlewares:
-        - strip-route-path
-      service: sentence-transformer
+      service: folio-shelving-order
   services:
     rollout:
       loadBalancer:
@@ -39,10 +37,10 @@ http:
       loadBalancer:
         servers:
           - url: http://shelf-reading:8080
-    sentence-transformer:
+    folio-shelving-order:
       loadBalancer:
         servers:
-          - url: http://sentence-transformer:8080
+          - url: http://folio-shelving-order:8080
   middlewares:
     ldap-valid-user:
       plugin:

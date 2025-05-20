@@ -6,6 +6,9 @@ services:
       context: ../folio-offline-shelf-reading
     volumes:
       - ../folio-offline-shelf-reading:/app
+  folio-shelving-order:
+    build:
+      context: ../folio-shelving-order
   rollout:
     profiles: [donotstart]
   traefik:

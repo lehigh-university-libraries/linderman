@@ -59,6 +59,9 @@ DOCKER_SERVICES=("traefik" "rollout")
 if [ "$GIT_REPO" = "lehigh-university-libraries/folio-offline-shelf-reading" ]; then
   update_env "SHELF_READING_TAG" "${DOCKER_TAG}"
   DOCKER_SERVICES=("shelf-reading")
+elif [ "$GIT_REPO" = "lehigh-university-libraries/folio-shelving-order" ]; then
+  update_env "SHELVING_ORDER_TAG" "${DOCKER_TAG}"
+  DOCKER_SERVICES=("folio-shelving-order")
 elif [ "$GIT_REPO" = "lehigh-university-libraries/linderman" ]; then
   git fetch origin
   git reset --hard

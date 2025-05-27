@@ -165,6 +165,11 @@ func (la *LdapAuth) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		la.next.ServeHTTP(rw, req)
 		return
 	}
+	if strings.HasSuffix(req.URL.Path, "/logout") {
+		LoggerINFO.Printf("skipping auth for %s", req.URL.Path)
+		la.next.ServeHTTP(rw, req)
+		return
+	}
 
 	var err error
 

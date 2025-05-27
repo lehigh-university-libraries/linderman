@@ -8,7 +8,7 @@ set -eou pipefail
 # because GitHub runners container would be restarted on a rollout, causing the GitHub Action workflow to hang
 # so instead we just check for updates and handle those as they come
 RUNNER_CONTAINER="github-actions-runner"
-RUNNER_IMAGE="us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner:main"
+RUNNER_IMAGE="ghcr.io/lehigh-university-libraries/docker-builds/actions-runner:main"
 
 # helper function for docker compose commands
 docker_compose() {

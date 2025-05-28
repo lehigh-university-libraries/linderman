@@ -20,7 +20,7 @@ http:
         - https
       tls: {}
       middlewares:
-        - ldap-valid-user
+        - ldap-shelf-reading
       service: shelf-reading
     folio-shelving-order:
       rule: PathPrefix(`/folio-shelving-order`)
@@ -52,6 +52,20 @@ http:
             - Url: "ldaps://nis.cc.lehigh.edu"
               Port: 636
               Weight: 10
+    ldap-shelf-reading:
+      plugin:
+        ldapAuth:
+          enabled: true
+          attribute: "uid"
+          baseDN: "dc=lehigh,dc=edu"
+          serverList:
+            - Url: "ldaps://nis.cc.lehigh.edu"
+              Port: 636
+              Weight: 10
+          allowedUsers:
+          {{- range env "SHELF_READING_ALLOWED_USERS" | splitList "\n" }}
+            - {{ . }}
+          {{- end }}
     https-redirect:
       redirectScheme:
         scheme: https

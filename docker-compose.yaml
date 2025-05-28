@@ -58,6 +58,7 @@ services:
       --experimental.localPlugins.ldapAuth.moduleName=github.com/lehigh-university-libraries/ldapAuth
     environment:
       DOMAIN: localhost
+      SHELF_READING_ALLOWED_USERS: ${SHELF_READING_ALLOWED_USERS}
     ports:
       - "80:80"
       - "443:443"

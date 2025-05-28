@@ -105,6 +105,27 @@ cd path/to/linderman
 git subtree pull --prefix conf/traefik/plugins/ldapAuth https://github.com/lehigh-university-libraries/ldapAuth main --squash
 ```
 
+### App-specific allowed users
+
+If an app is restricted to certain users, for privacy/security reasons, instead of hardcoding the list of users in version control, the allowed users are set in an environment variable in `.env`.
+
+```
+SHELF_READING_ALLOWED_USERS="bob
+alice
+terry"
+```
+
+To update the list of allowed users, you can update the environment variable, being sure to add one person per line with the entire list is wrapped in double quotes. Commenting out a user **might** work only because it requires `#` to be in the username e.g.
+
+```bash
+ssh apps-test.lib.lehigh.edu
+cd /opt/linderman
+sudo vim.tiny .env
+docker compose up -d
+```
+
+Test, then repeat on production.
+
 ## Initial bootstrapping on SET managed stage/production VMs)
 
 ```

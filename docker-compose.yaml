@@ -59,6 +59,7 @@ services:
     environment:
       DOMAIN: localhost
       SHELF_READING_ALLOWED_USERS: ${SHELF_READING_ALLOWED_USERS}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
     ports:
       - "80:80"
       - "443:443"

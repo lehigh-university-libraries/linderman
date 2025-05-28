@@ -48,6 +48,7 @@ http:
           enabled: true
           attribute: "uid"
           baseDN: "dc=lehigh,dc=edu"
+          logLevel: {{ env "LOG_LEVEL" }}
           serverList:
             - Url: "ldaps://nis.cc.lehigh.edu"
               Port: 636
@@ -58,6 +59,7 @@ http:
           enabled: true
           attribute: "uid"
           baseDN: "dc=lehigh,dc=edu"
+          logLevel: {{ env "LOG_LEVEL" }}
           serverList:
             - Url: "ldaps://nis.cc.lehigh.edu"
               Port: 636

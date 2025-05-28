@@ -115,7 +115,7 @@ alice
 terry"
 ```
 
-To update the list of allowed users, you can update the environment variable, being sure to add one person per line with the entire list is wrapped in double quotes. Commenting out a user **might** work only because it requires `#` to be in the username e.g.
+To update the list of allowed users, you can update the environment variable, being sure to add one person per line with the entire list wrapped in double quotes (`"`). Commenting out a user in the list **might** work only because it requires `#` to be in the username e.g.
 
 ```bash
 ssh apps-test.lib.lehigh.edu
@@ -124,7 +124,15 @@ sudo vim.tiny .env
 docker compose up -d
 ```
 
-Test, then repeat on production.
+`docker compose up -d` should have rebuilt the traefik container with your new environment variable value of allowed users.
+
+On test, we have debug logging enabled on traefik, so you should see the new person(s) in the list of allowed users
+
+```
+docker compose logs traefik --tail 50
+```
+
+If all is well, you can repeat the steps on production (though there is no debug logging on production, so you won't see the users in the logs).
 
 ## Initial bootstrapping on SET managed stage/production VMs)
 

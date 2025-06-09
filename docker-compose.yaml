@@ -8,6 +8,7 @@ services:
     environment:
         # tell gunicorn/flask we're putting this behind a path
         SCRIPT_NAME: /shelf-reading
+        TZ: America/New_York
     healthcheck:
       start_period: 1s
   folio-shelving-order:

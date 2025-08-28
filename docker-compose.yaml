@@ -2,13 +2,24 @@
 networks:
   default:
 
+volumes:
+  mariadb-data: {}
+
 services:
+  mariadb:
+    image: mariadb:12.0.2@sha256:b30cc65b57a11a2e791ad5c06284e599fe9f1bf3fe9081a88d85bcf36389be4a
+    volumes:
+      - mariadb-data:/var/lib/mysql:rw
+    environment:
+      MARIADB_ROOT_PASSWORD_FILE: /run/secrets/MARIADB_ROOT_PASSWORD
+    secrets:
+      - source: MARIADB_ROOT_PASSWORD
   shelf-reading:
     image: ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:${SHELF_READING_TAG:-main}
     environment:
-        # tell gunicorn/flask we're putting this behind a path
-        SCRIPT_NAME: /shelf-reading
-        TZ: America/New_York
+      # tell gunicorn/flask we're putting this behind a path
+      SCRIPT_NAME: /shelf-reading
+      TZ: America/New_York
     healthcheck:
       start_period: 1s
   folio-shelving-order:
@@ -16,7 +27,7 @@ services:
     healthcheck:
       start_period: 1s
   rollout:
-    image: us-docker.pkg.dev/lehigh-lts-images/internal/rollout:main
+    image: ghcr.io/lehigh-university-libraries/rollout:main
     restart: always
     volumes:
       # need access to this code so we can run git pull
@@ -77,3 +88,9 @@ services:
       default:
         aliases:
           - localhost
+
+secrets:
+  MARIADB_ROOT_PASSWORD:
+    file: "./secrets/MARIADB_ROOT_PASSWORD"
+  OLE_DB_PASSWORD:
+    file: "./secrets/ole/MARIADB_PASSWORD"

@@ -14,7 +14,7 @@ services:
     build:
       context: ./app/ole
     environment:
-      GATE_URLS: ${GATE_URLS}
+      OLE_GATE_URLS: ${OLE_GATE_URLS}
     secrets:
       - source: OLE_DB_PASSWORD
   mariadb:

@@ -72,7 +72,10 @@ else
   exit 1
 fi
 
+./scripts/maintenance/create-secrets.sh
+
 docker_compose pull --quiet "${DOCKER_SERVICES[@]}"
+docker_compose build --quiet
 
 # TODO if relevant, put app into read-only mode, we're about to restart any containers we pulled
 

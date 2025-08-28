@@ -15,4 +15,4 @@ CREATE TABLE `lib_gate_counts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE USER `ole`@`%` IDENTIFIED BY 'CHANGEME';
-GRANT ALL PRIVILEGES ON ole.ole TO `ole`@`%`
+GRANT ALL PRIVILEGES ON ole.* TO `ole`@`%`

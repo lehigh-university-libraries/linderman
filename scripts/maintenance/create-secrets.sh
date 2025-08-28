@@ -9,7 +9,7 @@ readonly LENGTH=32
 yq -r '.secrets[].file' docker-compose.yaml | uniq | while read -r SECRET; do
   if [ ! -f "${SECRET}" ]; then
     echo "Creating: ${SECRET}" >&2
-    DIR=$(basename "${SECRET}")
+    DIR=$(dirname "${SECRET}")
     if [ ! -d "${DIR}" ]; then
       mkdir -p "$DIR"
     fi

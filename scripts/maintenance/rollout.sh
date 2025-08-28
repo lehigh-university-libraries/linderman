@@ -51,7 +51,10 @@ docker_compose() {
 
 cd /opt/linderman || exit 1
 
-export $(grep = .env | grep -v '"' | xargs)
+set -a
+# shellcheck source=/dev/null
+source .env
+set +a
 
 # TODO link right to PRs
 send_slack_message "Rolling out <https://github.com/${GIT_REPO}/tree/${GIT_BRANCH}|${GIT_REPO#*/}:${DOCKER_TAG}> to \`${DOMAIN%%.*}\` :rocket: :shipit: :rocket:"

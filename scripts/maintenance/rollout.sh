@@ -51,6 +51,11 @@ docker_compose() {
 
 cd /opt/linderman || exit 1
 
+set -a
+# shellcheck source=/dev/null
+source .env
+set +a
+
 # TODO link right to PRs
 send_slack_message "Rolling out <https://github.com/${GIT_REPO}/tree/${GIT_BRANCH}|${GIT_REPO#*/}:${DOCKER_TAG}> to \`${DOMAIN%%.*}\` :rocket: :shipit: :rocket:"
 
@@ -75,7 +80,6 @@ fi
 ./scripts/maintenance/create-secrets.sh
 
 docker_compose pull --quiet "${DOCKER_SERVICES[@]}"
-docker_compose build --quiet
 
 # TODO if relevant, put app into read-only mode, we're about to restart any containers we pulled
 

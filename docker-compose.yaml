@@ -1,11 +1,20 @@
 ---
 networks:
   default:
-
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          gateway: 172.18.0.1
 volumes:
   mariadb-data: {}
 
 services:
+  ole:
+    image: ghcr.io/lehigh-university-libraries/ole-gate-count:main
+    environment:
+      OLE_GATE_URLS: ${OLE_GATE_URLS}
+    secrets:
+      - source: OLE_DB_PASSWORD
   mariadb:
     image: mariadb:12.0.2@sha256:b30cc65b57a11a2e791ad5c06284e599fe9f1bf3fe9081a88d85bcf36389be4a
     volumes:
@@ -14,6 +23,9 @@ services:
       MARIADB_ROOT_PASSWORD_FILE: /run/secrets/MARIADB_ROOT_PASSWORD
     secrets:
       - source: MARIADB_ROOT_PASSWORD
+    networks:
+      default:
+        ipv4_address: 172.18.0.10
   shelf-reading:
     image: ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:${SHELF_READING_TAG:-main}
     environment:

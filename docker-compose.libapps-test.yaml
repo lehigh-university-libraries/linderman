@@ -1,7 +1,10 @@
 # overrides for docker compose running on apps-test
 networks:
   gha:
-
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+          gateway: 172.19.0.1
 volumes:
   actions-runner-data: {}
 

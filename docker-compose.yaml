@@ -10,9 +10,7 @@ volumes:
 
 services:
   ole:
-    image: ole:latest
-    build:
-      context: ./app/ole
+    image: ghcr.io/lehigh-university-libraries/ole-gate-count:main
     environment:
       OLE_GATE_URLS: ${OLE_GATE_URLS}
     secrets:

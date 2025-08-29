@@ -1,5 +1,10 @@
 # overrides for local deployment
-
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
 services:
   shelf-reading:
     build:
@@ -16,3 +21,12 @@ services:
       - "80:80"
       - "443:443"
       - "8080:8080"
+  gate-counts:
+    build:
+      context: ../ole-gate-count
+  mariadb:
+    ports:
+      - "3306:3306"
+    networks:
+      default:
+        ipv4_address: 172.20.0.10

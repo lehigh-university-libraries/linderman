@@ -3,3 +3,4 @@ secrets/*
 !secrets/.keep
 certs/*
 !certs/.keep
+docker-compose.override.yaml

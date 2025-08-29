@@ -22,6 +22,14 @@ http:
       middlewares:
         - ldap-shelf-reading
       service: shelf-reading
+    gate-counts:
+      rule: PathPrefix(`/gate-counts`)
+      entryPoints:
+        - https
+      tls: {}
+      middlewares:
+        - ldap-shelf-reading
+      service: gate-counts
     folio-shelving-order:
       rule: PathPrefix(`/folio-shelving-order`)
       entryPoints:
@@ -41,6 +49,10 @@ http:
       loadBalancer:
         servers:
           - url: http://folio-shelving-order:8080
+    gate-counts:
+      loadBalancer:
+        servers:
+          - url: http://gate-counts:8080
   middlewares:
     ldap-valid-user:
       plugin:

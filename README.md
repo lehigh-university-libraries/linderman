@@ -159,3 +159,16 @@ A couple files need to be present on the host:
 cp /opt/linderman/scripts/systemd/linderman.service /etc/systemd/system/
 systemctl enable linderman.service
 ```
+
+## Docker compose liveness probes
+
+Linderman test and prod both use [docker-autoheal](https://github.com/lehigh-university-libraries/docker-autoheal) to ensure the services recover after docker daemon restarts (i.e. OS upgrades) and are healthy. The process is ran using [systemd](./scripts/systemd/docker-autoheal.service) and was installed like so:
+
+```bash
+$ curl -Lo dah.tar.gz "https://github.com/lehigh-university-libraries/docker-autoheal/releases/download/0.2.8/docker-autoheal_Linux_x86_64.tar.gz"
+$ tar -zxvf dah.tar.gz
+$ sudo mv docker-autoheal /usr/bin/
+$ sudo systemctl enable docker-autoheal.service
+$ sudo systemctl start docker-autoheal.service
+```
+

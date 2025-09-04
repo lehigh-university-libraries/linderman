@@ -1,0 +1,17 @@
+[Unit]
+Description=Monitor docker health
+After=docker.service
+StartLimitIntervalSec=120
+StartLimitBurst=3
+
+[Service]
+EnvironmentFile=/opt/linderman/.env
+ExecStart=/usr/bin/docker-autoheal \
+  --webhook-url "$SLACK_WEBHOOK" \
+  --webhook-key "text"
+Restart=on-failure
+RestartSec=15s
+
+[Install]
+WantedBy=multi-user.target
+

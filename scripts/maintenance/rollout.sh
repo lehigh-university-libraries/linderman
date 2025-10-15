@@ -81,6 +81,7 @@ else
   exit 1
 fi
 
+# need to load .env again after we updated our .env file
 source_env
 
 ./scripts/maintenance/create-secrets.sh

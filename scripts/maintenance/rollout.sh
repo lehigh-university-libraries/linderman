@@ -6,6 +6,13 @@ GIT_BRANCH=${GIT_BRANCH:-main}
 
 echo "Deploying git branch $GIT_BRANCH, docker tag $DOCKER_TAG"
 
+source_env() {
+    set -a
+    # shellcheck source=/dev/null
+    source .env
+    set +a
+}
+
 send_slack_message() {
     escaped_message=$(echo "$@" | jq -Rsa .)
     curl -s -o /dev/null -XPOST "$SLACK_WEBHOOK" -d '{
@@ -51,10 +58,7 @@ docker_compose() {
 
 cd /opt/linderman || exit 1
 
-set -a
-# shellcheck source=/dev/null
-source .env
-set +a
+source_env
 
 # TODO link right to PRs
 send_slack_message "Rolling out <https://github.com/${GIT_REPO}/tree/${GIT_BRANCH}|${GIT_REPO#*/}:${DOCKER_TAG}> to \`${DOMAIN%%.*}\` :rocket: :shipit: :rocket:"
@@ -76,6 +80,8 @@ else
   echo "Unknown repo: $GIT_REPO"
   exit 1
 fi
+
+source_env
 
 ./scripts/maintenance/create-secrets.sh
 

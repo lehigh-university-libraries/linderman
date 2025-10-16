@@ -1,8 +1,5 @@
 # overrides for docker compose running on apps-prod
 services:
-  shelf-reading:
-    volumes:
-      - ./secrets/shelf-reading/config.properties:/app/config/config.properties:ro
   rollout:
     environment:
       DOMAIN: apps-prod.lib.lehigh.edu

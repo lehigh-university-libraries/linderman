@@ -58,6 +58,52 @@ cd /path/to/linderman
 docker compose up --build folio-shelving-order -d
 ```
 
+## Adding a New Service
+
+To add a new service to linderman, follow these steps:
+
+1. **Define Traefik router and service** in [conf/traefik/config.tmpl](./conf/traefik/config.tmpl)
+   - Add a router that matches the path prefix for your service
+   - Add a corresponding service pointing to your docker container
+```yaml
+http:
+  routers:
+    my-app:
+      rule: "PathPrefix(`/my-app`)"
+      service: my-app
+  services:
+    my-app:
+      loadBalancer:
+        servers:
+          - url: "http://my-app:8000"
+```
+
+2. **Add service definition to docker-compose.yaml**
+   - Define your service with the appropriate image, volumes, environment variables, etc.
+   - Ensure the service name matches what you referenced in the Traefik configuration
+
+```yaml
+services:
+  my-app:
+    image: my-org/my-app:latest
+    environment:
+      SCRIPT_NAME: /my-app
+```
+
+3. **Create secrets directory** (if needed)
+   - If your service requires secrets (API keys, credentials, etc.), create a directory in `secrets/` named after your docker compose service name
+   - Add the necessary secret files to this directory
+
+```bash
+mkdir -p secrets/my-app
+echo "secret-value" > secrets/my-app/api-key
+```
+
+4. **Configure app for path prefix compatibility**
+   - Your application must be compatible with running under a Traefik path prefix (e.g. `/shelf-reading`)
+   - For Python/Flask/Gunicorn apps, set the `SCRIPT_NAME` environment variable on the container to match your path prefix
+    - Example: `SCRIPT_NAME=/my-app` in your docker-compose service definition (shown above in step 2)
+
 ## Continuous Deployment
 
 This repo, as well as each app linderman hosts, references a reusable GitHub Action [linderman-deploy.yaml](https://github.com/lehigh-university-libraries/gha/blob/main/.github/workflows/linderman-deploy.yaml) to deploy changes made in GitHub into Lehigh's infrastructure.

@@ -71,6 +71,9 @@ if [ "$GIT_REPO" = "lehigh-university-libraries/folio-offline-shelf-reading" ]; 
 elif [ "$GIT_REPO" = "lehigh-university-libraries/folio-shelving-order" ]; then
   update_env "SHELVING_ORDER_TAG" "${DOCKER_TAG}"
   DOCKER_SERVICES=("folio-shelving-order")
+elif [ "$GIT_REPO" = "lehigh-university-libraries/folio-celus-report-link" ]; then
+  update_env "CELUS_REPORT_TAG" "${DOCKER_TAG}"
+  DOCKER_SERVICES=("folio-celus-report-link")
 elif [ "$GIT_REPO" = "lehigh-university-libraries/linderman" ]; then
   git fetch origin
   git reset --hard

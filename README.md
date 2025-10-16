@@ -78,7 +78,17 @@ http:
           - url: "http://my-app:8000"
 ```
 
-2. **Add service definition to docker-compose.yaml**
+2. **Create secrets directory** (if needed)
+   - If your service requires secrets (API keys, credentials, etc.), create a directory in `secrets/` named after your docker compose service name
+   - Add the necessary secret files to this directory
+   - these secrets will get created automatically for you on the host VMs but you'll need to populate them with their contents
+
+```bash
+mkdir -p secrets/my-app
+echo "secret-value" > secrets/my-app/api-key
+```
+
+3. **Add service definition to docker-compose.yaml**
    - Define your service with the appropriate image, volumes, environment variables, etc.
    - Ensure the service name matches what you referenced in the Traefik configuration
 
@@ -88,16 +98,10 @@ services:
     image: my-org/my-app:latest
     environment:
       SCRIPT_NAME: /my-app
+    volumes:
+      - ./secrets/my-app/api-key:/app/api-key:ro
 ```
 
-3. **Create secrets directory** (if needed)
-   - If your service requires secrets (API keys, credentials, etc.), create a directory in `secrets/` named after your docker compose service name
-   - Add the necessary secret files to this directory
-
-```bash
-mkdir -p secrets/my-app
-echo "secret-value" > secrets/my-app/api-key
-```
 
 4. **Configure app for path prefix compatibility**
    - Your application must be compatible with running under a Traefik path prefix (e.g. `/shelf-reading`)

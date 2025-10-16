@@ -56,6 +56,32 @@ docker_compose() {
       "$@"
 }
 
+create_secret_paths() {
+  # Parse docker-compose files and create any missing secrets directories/files
+  # This only handles volume mounts (e.g. volumes: [./secrets/foo/secret:/app/secret])
+  # docker compose secrets are generated in ./create-secrets.sh
+  # this script is to avoid starting a new service without the file on the host
+  # which would create the secret file as a directory on the host
+  # and is toilsome to cleanup
+
+  docker_compose config --format json | \
+    jq -r '.services[].volumes // [] | .[] | select(. != null) | .source | select(startswith("/opt/linderman/secrets/"))' | \
+  while read -r SECRET; do
+    if [ -f "$SECRET" ]; then
+      continue
+    fi
+
+    DIR=$(dirname "$SECRET")
+    if [ ! -d "$DIR" ]; then
+      echo "Creating secrets directory: $DIR"
+      mkdir -p "$DIR"
+    fi
+
+    echo "Creating empty secrets file: $SECRET"
+    touch "$SECRET"
+  done
+}
+
 cd /opt/linderman || exit 1
 
 source_env
@@ -89,9 +115,12 @@ source_env
 
 ./scripts/maintenance/create-secrets.sh
 
+# Create any missing secrets directories and files from docker-compose volumes
+create_secret_paths
+
 docker_compose pull --quiet "${DOCKER_SERVICES[@]}"
 
-# TODO if relevant, put app into read-only mode, we're about to restart any containers we pulled
+# TODO if relevant, put app into read-only mode, we are about to restart any containers we pulled
 
 docker_compose up \
   --remove-orphans \

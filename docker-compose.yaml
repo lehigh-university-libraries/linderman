@@ -9,6 +9,15 @@ volumes:
   mariadb-data: {}
 
 services:
+  folio-celus-report-link:
+    image: ghcr.io/lehigh-university-libraries/folio-celus-report-link:${CELUS_REPORT_TAG:-main}
+    environment:
+      # tell gunicorn/flask we're putting this behind a path
+      SCRIPT_NAME: /celus-report
+    volumes:
+      - ./secrets/folio-celus-report-link/config.properties:/app/config/config.properties:ro
+    # healthcheck:
+    #   start_period: 1s
   gate-counts:
     image: ghcr.io/lehigh-university-libraries/ole-gate-count:main
     environment:

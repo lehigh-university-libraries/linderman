@@ -36,6 +36,12 @@ http:
         - https
       tls: {}
       service: folio-shelving-order
+    folio-celus-report-link:
+      rule: PathPrefix(`/celus-report`)
+      entryPoints:
+        - https
+      tls: {}
+      service: folio-celus-report-link
   services:
     rollout:
       loadBalancer:
@@ -53,6 +59,10 @@ http:
       loadBalancer:
         servers:
           - url: http://gate-counts:8080
+    folio-celus-report-link:
+      loadBalancer:
+        servers:
+          - url: http://folio-celus-report-link:8080
   middlewares:
     ldap-valid-user:
       plugin:

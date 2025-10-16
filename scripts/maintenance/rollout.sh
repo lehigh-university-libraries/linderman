@@ -58,10 +58,11 @@ docker_compose() {
 
 create_secret_paths() {
   # Parse docker-compose files and create any missing secrets directories/files
-  # This handles both volume mounts (./secrets/...)
+  # This only handles volume mounts (e.g. volumes: [./secrets/foo/secret:/app/secret])
   # docker compose secrets are generated in ./create-secrets.sh
-  # this is to avoid starting a new service without the file on the host
-  # which would create the file as a directory
+  # this script is to avoid starting a new service without the file on the host
+  # which would create the secret file as a directory on the host
+  # and is toilsome to cleanup
 
   docker_compose config --format json | \
     jq -r '.services[].volumes // [] | .[] | select(. != null) | .source | select(startswith("/opt/linderman/secrets/"))' | \

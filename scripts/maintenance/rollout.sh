@@ -97,6 +97,9 @@ if [ "$GIT_REPO" = "lehigh-university-libraries/folio-offline-shelf-reading" ]; 
 elif [ "$GIT_REPO" = "lehigh-university-libraries/folio-shelving-order" ]; then
   update_env "SHELVING_ORDER_TAG" "${DOCKER_TAG}"
   DOCKER_SERVICES=("folio-shelving-order")
+elif [ "$GIT_REPO" = "lehigh-university-libraries/ole-gate-count" ]; then
+  update_env "OLE_TAG" "${DOCKER_TAG}"
+  DOCKER_SERVICES=("gate-counts")
 elif [ "$GIT_REPO" = "lehigh-university-libraries/folio-celus-report-link" ]; then
   update_env "CELUS_REPORT_TAG" "${DOCKER_TAG}"
   DOCKER_SERVICES=("folio-celus-report-link")

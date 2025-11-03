@@ -19,7 +19,7 @@ services:
     # healthcheck:
     #   start_period: 1s
   gate-counts:
-    image: ghcr.io/lehigh-university-libraries/ole-gate-count:main
+    image: ghcr.io/lehigh-university-libraries/ole-gate-count:${OLE_TAG:-main}
     environment:
       OLE_GATE_URLS: ${OLE_GATE_URLS}
     secrets:

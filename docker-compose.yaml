@@ -77,7 +77,7 @@ services:
     healthcheck:
       start_period: 1s
   traefik:
-    image: traefik:v3.4.0@sha256:4cf907247939b5d20bf4eff73abd21cb413c339600dde76dbc94a874b2578a27
+    image: traefik:v3.6.2@sha256:aaf0f6185419a50c74651448c1a5bf4606bd2d2ddb7b8749eed505d55bf8b8ea
     restart: always
     command: >-
       --api.insecure=true

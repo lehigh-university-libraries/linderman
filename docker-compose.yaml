@@ -1,10 +1,6 @@
 ---
 networks:
   default:
-    ipam:
-      config:
-        - subnet: 172.18.0.0/16
-          gateway: 172.18.0.1
 volumes:
   mariadb-data: {}
 
@@ -37,7 +33,6 @@ services:
       - source: MARIADB_ROOT_PASSWORD
     networks:
       default:
-        ipv4_address: 172.18.0.10
   shelf-reading:
     image: ghcr.io/lehigh-university-libraries/folio-offline-shelf-reading:${SHELF_READING_TAG:-main}
     environment:

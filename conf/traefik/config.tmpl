@@ -5,6 +5,12 @@ http:
       entryPoints:
         - http
       service: shelf-reading
+    healthcheck:
+      rule: Path(`/healthcheck`)
+      entryPoints:
+        - https
+      tls: {}
+      service: rollout-health
     rollout:
       rule: PathPrefix(`/_rollout`)
       entryPoints:
@@ -47,6 +53,10 @@ http:
       loadBalancer:
         servers:
           - url: http://rollout:8080
+    rollout-health:
+      loadBalancer:
+        servers:
+          - url: http://rollout:8080/healthcheck
     shelf-reading:
       loadBalancer:
         servers:

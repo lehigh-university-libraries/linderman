@@ -1,7 +1,7 @@
 http:
   routers:
     http_redirect:
-      rule: PathPrefix(`/`)
+      rule: (!PathPrefix(`/book-reconciler`))
       entryPoints:
         - http
       service: shelf-reading
@@ -48,6 +48,22 @@ http:
         - https
       tls: {}
       service: folio-celus-report-link
+    book-reconciler:
+      rule: PathPrefix(`/book-reconciler`)
+      middlewares:
+        - strip-book-reconciler-path
+      entryPoints:
+        - https
+      tls: {}
+      service: book-reconciler
+    book-reconciler-http:
+      rule: PathPrefix(`/book-reconciler`)
+      middlewares:
+        - strip-book-reconciler-path
+      entryPoints:
+        - http
+      priority: 10
+      service: book-reconciler
   services:
     rollout:
       loadBalancer:
@@ -73,6 +89,10 @@ http:
       loadBalancer:
         servers:
           - url: http://folio-celus-report-link:8080
+    book-reconciler:
+      loadBalancer:
+        servers:
+          - url: http://book-reconciler:5001
   middlewares:
     ldap-valid-user:
       plugin:
@@ -108,6 +128,10 @@ http:
       stripPrefixRegex:
         regex:
           - "^/[^/]+"
+    strip-book-reconciler-path:
+      stripPrefixRegex:
+        regex:
+          - "^/book-reconciler"
     rollout-ip:
       ipWhiteList:
         sourceRange:

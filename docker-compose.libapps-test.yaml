@@ -40,3 +40,9 @@ services:
       default:
         aliases:
           - apps-test.lib.lehigh.edu
+  book-reconciler:
+    image: ghcr.io/post45-data-collective/openrefine-reconciliation-service:main@sha256:7902aec4ce91c44f12bdaf42c43829d472b899cac97440090f608c34180a9430
+    environment:
+      - OCLC_CLIENT_ID=${OCLC_CLIENT_ID}
+      - OCLC_CLIENT_SECRET=${OCLC_CLIENT_SECRET}
+      - OR_IP=http://apps-test.lib.lehigh.edu/book-reconciler

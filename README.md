@@ -222,3 +222,11 @@ $ sudo systemctl enable docker-autoheal.service
 $ sudo systemctl start docker-autoheal.service
 ```
 
+## TLS Certs
+
+Traefik is configured to use Lehigh's wildcard cert. When copying the cert for traefik, ensure the full chain is in `./certs/cert.pem`
+
+```
+cd /opt/linderman
+cat /etc/ssl/certs/lib.lehigh.edu.crt /etc/ssl/certs/gd_bundle-g2-g1.crt | sudo tee certs/cert.pem
+```

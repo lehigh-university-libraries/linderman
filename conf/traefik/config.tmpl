@@ -48,6 +48,12 @@ http:
         - https
       tls: {}
       service: folio-celus-report-link
+    email-new-requests:
+      rule: PathPrefix(`/email-new-requests`)
+      entryPoints:
+        - https
+      tls: {}
+      service: email-new-requests
     book-reconciler:
       rule: PathPrefix(`/book-reconciler`)
       middlewares:
@@ -89,6 +95,10 @@ http:
       loadBalancer:
         servers:
           - url: http://folio-celus-report-link:8080
+    email-new-requests:
+      loadBalancer:
+        servers:
+          - url: http://email-new-requests:5000
     book-reconciler:
       loadBalancer:
         servers:

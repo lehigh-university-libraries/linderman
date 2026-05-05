@@ -14,6 +14,12 @@ services:
       - ./secrets/folio-celus-report-link/config.properties:/app/config/config.properties:ro
     # healthcheck:
     #   start_period: 1s
+  email-new-requests:
+    image: ghcr.io/lehigh-university-libraries/folio-email-new-requests:${EMAIL_NEW_REQUESTS_TAG:-main}
+    environment:
+      SCRIPT_NAME: /email-new-requests
+    volumes:
+      - ./secrets/folio-email-new-requests/config.yaml:/app/config.yaml
   gate-counts:
     image: ghcr.io/lehigh-university-libraries/ole-gate-count:${OLE_TAG:-main}
     environment:

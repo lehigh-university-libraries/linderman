@@ -103,6 +103,9 @@ elif [ "$GIT_REPO" = "lehigh-university-libraries/ole-gate-count" ]; then
 elif [ "$GIT_REPO" = "lehigh-university-libraries/folio-celus-report-link" ]; then
   update_env "CELUS_REPORT_TAG" "${DOCKER_TAG}"
   DOCKER_SERVICES=("folio-celus-report-link")
+elif [ "$GIT_REPO" = "lehigh-university-libraries/folio-email-new-requests" ]; then
+  update_env "EMAIL_NEW_REQUESTS_TAG" "${DOCKER_TAG}"
+  DOCKER_SERVICES=("email-new-requests")
 elif [ "$GIT_REPO" = "lehigh-university-libraries/linderman" ]; then
   git fetch origin
   git reset --hard

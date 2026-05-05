@@ -108,6 +108,9 @@ services:
    - For Python/Flask/Gunicorn apps, set the `SCRIPT_NAME` environment variable on the container to match your path prefix
     - Example: `SCRIPT_NAME=/my-app` in your docker-compose service definition (shown above in step 2)
 
+5. **Ensure rollout.sh knows how to rollout your app**
+  - [./scripts/maintenance/rollout.sh](./scripts/maintenance/rollout.sh) needs to know which docker compose service needs restarted when you app deploys to linderman. This is done by specifying the docker tag environment variable, docker compose service name, and git repo that will trigger the deploy. You can use the other `if/elif` statements as an example how to add this
+
 ## Continuous Deployment
 
 This repo, as well as each app linderman hosts, references a reusable GitHub Action [linderman-deploy.yaml](https://github.com/lehigh-university-libraries/gha/blob/main/.github/workflows/linderman-deploy.yaml) to deploy changes made in GitHub into Lehigh's infrastructure.

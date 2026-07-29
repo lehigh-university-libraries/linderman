@@ -110,6 +110,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:z
     healthcheck:
       test: traefik healthcheck --ping
+      interval: 2s
+      timeout: 2s
+      retries: 15
       start_period: 5s
     networks:
       default:

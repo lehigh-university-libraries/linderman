@@ -227,9 +227,60 @@ $ sudo systemctl start docker-autoheal.service
 
 ## TLS Certs
 
-Traefik is configured to use Lehigh's wildcard cert. When copying the cert for traefik, ensure the full chain is in `./certs/cert.pem`
+Traefik uses Lehigh's Let's Encrypt wildcard certificate from the `certs`
+directory bind-mounted into the container. The weekly wildcard updater invokes
+`/usr/local/sbin/local-cert-hook` after it downloads these files:
+
+- Full certificate chain: `/etc/ssl/certs/le/lib.lehigh.edu.pem`
+- Private key: `/etc/ssl/private/le/lib.lehigh.edu.key`
+
+Install the hook and its root-only configuration on each Docker host:
 
 ```
 cd /opt/linderman
-cat /etc/ssl/certs/lib.lehigh.edu.crt /etc/ssl/certs/gd_bundle-g2-g1.crt | sudo tee certs/cert.pem
+sudo install -o root -g root -m 0600 \
+  scripts/maintenance/local-cert-hook.env.example \
+  /etc/default/local-cert-hook
+sudoedit /etc/default/local-cert-hook # set SLACK_WEBHOOK and EXPECTED_HOST
+sudo install -o root -g root -m 0755 \
+  scripts/maintenance/lehigh-certs.sh \
+  /usr/local/sbin/local-cert-hook
+sudo chown root:root \
+  /opt/linderman \
+  /opt/linderman/.env \
+  /opt/linderman/docker-compose.yaml \
+  /opt/linderman/docker-compose.libapps-test.yaml \
+  /opt/linderman/docker-compose.libapps-prod.yaml \
+  /opt/linderman/certs
+sudo chmod go-w \
+  /opt/linderman \
+  /opt/linderman/docker-compose.yaml \
+  /opt/linderman/docker-compose.libapps-test.yaml \
+  /opt/linderman/docker-compose.libapps-prod.yaml \
+  /opt/linderman/certs
+sudo chmod 0600 /opt/linderman/.env
+```
+
+The hook validates the full chain, hostname, expiry, private key, and key/cert
+pair before changing anything. It compares SHA-256 checksums with the files
+already mounted into Traefik, so an unchanged renewal exits without recreating
+the container. When either file has changed, it stages and installs both files,
+then force-recreates only Traefik and waits for its healthcheck. Any validation,
+Compose, or healthcheck failure is sent to Slack and logged to stderr and
+syslog.
+
+The hook automatically selects `docker-compose.$(hostname --short).yaml` in
+addition to the base Compose file. Set `COMPOSE_HOST` or `COMPOSE_OVERRIDE` in
+`/etc/default/local-cert-hook` if a host's Compose filename does not match its
+short hostname.
+
+The hook and every path used for root-level Compose operations must remain
+root-owned and not group/world-writable. Salt can manage the two installed
+files instead of the commands above; keep `/etc/default/local-cert-hook` at
+mode `0600` because it contains the Slack webhook.
+
+To invoke the same hook manually:
+
+```
+sudo /usr/local/sbin/local-cert-hook
 ```

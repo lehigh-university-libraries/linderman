@@ -53,6 +53,16 @@ services:
     image: ghcr.io/lehigh-university-libraries/folio-shelving-order:${SHELVING_ORDER_TAG:-main}
     healthcheck:
       start_period: 1s
+  triage-donations:
+    image: ghcr.io/lehigh-university-libraries/triage-donations:${TRIAGE_DONATIONS_TAG:-main}
+    environment:
+      SCRIPT_NAME: /triage-donations
+      TZ: America/New_York
+    volumes:
+      - ./secrets/triage-donations/config.yaml:/app/config.yaml:ro
+      - ./secrets/triage-donations/service_account.json:/app/service_account.json:ro
+    healthcheck:
+      start_period: 1s
   rollout:
     image: ghcr.io/lehigh-university-libraries/rollout:main
     restart: always

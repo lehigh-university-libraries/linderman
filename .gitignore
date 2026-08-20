@@ -3,4 +3,5 @@ secrets/*
 !secrets/.keep
 certs/*
 !certs/.keep
+conf/traefik/ldap.yml
 docker-compose.override.yaml

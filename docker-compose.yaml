@@ -99,7 +99,7 @@ services:
       --entryPoints.https.address=:443
       --entryPoints.https.forwardedHeaders.trustedIPs=128.180.1.79/32,128.180.1.80/32,128.180.6.212/32,128.180.6.203/32,172.0.0.0/8
       --entryPoints.https.transport.respondingTimeouts.readTimeout=3600
-      --providers.file.filename=/etc/traefik/config.yaml
+      --providers.file.directory=/etc/traefik/dynamic
       --providers.file.watch=true
       --providers.docker=true
       --providers.docker.network=default
@@ -116,7 +116,7 @@ services:
       # mount our ldap auth middleware
       - ./conf/traefik/plugins/ldapAuth:/plugins-local/src/github.com/lehigh-university-libraries/ldapAuth:r
       - ./certs:/etc/ssl/traefik:Z,ro
-      - ./conf/traefik/config.tmpl:/etc/traefik/config.yaml:ro
+      - ./conf/traefik:/etc/traefik/dynamic:ro
       - /var/run/docker.sock:/var/run/docker.sock:z
     healthcheck:
       test: traefik healthcheck --ping

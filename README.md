@@ -159,32 +159,27 @@ git subtree pull --prefix conf/traefik/plugins/ldapAuth https://github.com/lehig
 
 ### App-specific allowed users
 
-If an app is restricted to certain users, for privacy/security reasons, instead of hardcoding the list of users in version control, the allowed users are set in an environment variable in `.env`.
+If an app is restricted to certain users, for privacy/security reasons, instead of hardcoding the list of users in version control, the allowed users are set in `./conf/traefik/ldap.yml` in the `allowedUsers` list:
 
-```
-SHELF_READING_ALLOWED_USERS="bob
-alice
-terry"
-```
-
-To update the list of allowed users, you can update the environment variable, being sure to add one person per line with the entire list wrapped in double quotes (`"`). Commenting out a user in the list **might** work only because it requires `#` to be in the username e.g.
-
-```bash
-ssh apps-test.lib.lehigh.edu
-cd /opt/linderman
-sudo vim.tiny .env
-docker compose up -d
-```
-
-`docker compose up -d` should have rebuilt the traefik container with your new environment variable value of allowed users.
-
-On test, we have debug logging enabled on traefik, so you should see the new person(s) in the list of allowed users
-
-```
-docker compose logs traefik --tail 50
+```yaml
+    ldap-shelf-reading:
+      plugin:
+        ldapAuth:
+          enabled: true
+          attribute: "uid"
+          baseDN: "dc=lehigh,dc=edu"
+          logLevel: INFO
+          serverList:
+            - Url: "ldaps://nis.cc.lehigh.edu"
+              Port: 636
+              Weight: 10
+          allowedUsers:
+            - bob
+            - alice
+            - terry
 ```
 
-If all is well, you can repeat the steps on production (though there is no debug logging on production, so you won't see the users in the logs).
+To update the list of allowed users, you can update the list of allowed users in `./conf/traefik/ldap.yml` on apps-test and then apps-prod
 
 ## Initial bootstrapping on SET managed stage/production VMs)
 
